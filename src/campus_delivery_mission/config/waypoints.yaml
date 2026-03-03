@@ -1,0 +1,15 @@
+/**:
+  ros__parameters:
+    use_sim_time: true
+    image_topic: "/camera/image_raw"
+    scan_topic: "/scan"
+    mission_pause_topic: "/mission_pause"
+    obstacle_distance_topic: "/mission/nearest_obstacle"
+    stop_distance: 0.45
+    resume_distance: 0.60
+    output_dir: "~/ros2_proj_data"
+    csv_filename: "delivery_log.csv"
+    waypoints:
+      - {name: "library", x: 1.0, y: 0.5, yaw: 0.0}
+      - {name: "canteen", x: 2.5, y: -0.8, yaw: 1.57}
+      - {name: "dormitory", x: 0.2, y: -2.0, yaw: 3.14}
