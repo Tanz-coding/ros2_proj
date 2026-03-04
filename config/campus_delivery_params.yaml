@@ -5,12 +5,15 @@
     scan_topic: "/scan"
     mission_pause_topic: "/mission_pause"
     obstacle_distance_topic: "/mission/nearest_obstacle"
-    stop_distance: 0.45
-    resume_distance: 0.60
+    stop_distance: 0.30
+    resume_distance: 0.50
+    forward_angle_deg: 30.0
     output_dir: "~/ros2_proj_data"
     csv_filename: "delivery_log.csv"
     nav_action_name: "navigate_to_pose"
-    waypoints:
-      - {name: "library", x: -1.0, y: 1.2, yaw: 0.0}
-      - {name: "canteen", x: 0.5, y: -0.8, yaw: 1.57}
-      - {name: "dormitory", x: 1.8, y: 0.2, yaw: 3.14}
+    # SLAM 模式下坐标以机器人起点为原点
+    # house 场景中保守距离，确保不穿墙
+    waypoint_names: ["library", "canteen", "dormitory"]
+    waypoint_x: [1.5, 3.0, 1.0]
+    waypoint_y: [0.0, -1.0, -2.0]
+    waypoint_yaw: [0.0, 1.57, 3.14]

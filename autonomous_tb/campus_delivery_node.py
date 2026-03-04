@@ -10,6 +10,7 @@ from cv_bridge import CvBridge
 import rclpy
 from rclpy.action import ActionClient
 from rclpy.node import Node
+from rcl_interfaces.msg import ParameterDescriptor, ParameterType
 
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
@@ -30,7 +31,14 @@ class CampusDeliveryNode(Node):
     def __init__(self) -> None:
         super().__init__('campus_delivery_node')
 
-        self.declare_parameter('waypoints', [])
+        self.declare_parameter('waypoint_names',
+                               descriptor=ParameterDescriptor(type=ParameterType.PARAMETER_STRING_ARRAY))
+        self.declare_parameter('waypoint_x',
+                               descriptor=ParameterDescriptor(type=ParameterType.PARAMETER_DOUBLE_ARRAY))
+        self.declare_parameter('waypoint_y',
+                               descriptor=ParameterDescriptor(type=ParameterType.PARAMETER_DOUBLE_ARRAY))
+        self.declare_parameter('waypoint_yaw',
+                               descriptor=ParameterDescriptor(type=ParameterType.PARAMETER_DOUBLE_ARRAY))
         self.declare_parameter('image_topic', '/camera/image_raw')
         self.declare_parameter('mission_pause_topic', '/mission_pause')
         self.declare_parameter('obstacle_distance_topic', '/mission/nearest_obstacle')
@@ -73,15 +81,24 @@ class CampusDeliveryNode(Node):
         self.start_timer = self.create_timer(1.0, self._start_if_ready)
 
     def _load_waypoints(self) -> List[Waypoint]:
-        raw = self.get_parameter('waypoints').value
+        names = self.get_parameter('waypoint_names').value or []
+        xs = self.get_parameter('waypoint_x').value or []
+        ys = self.get_parameter('waypoint_y').value or []
+        yaws = self.get_parameter('waypoint_yaw').value or []
+
+        count = min(len(names), len(xs), len(ys), len(yaws))
+        if count == 0:
+            self.get_logger().warn('No waypoints configured (arrays empty).')
+            return []
+
         result: List[Waypoint] = []
-        for index, item in enumerate(raw):
+        for i in range(count):
             result.append(
                 Waypoint(
-                    name=str(item.get('name', f'wp_{index}')),
-                    x=float(item.get('x', 0.0)),
-                    y=float(item.get('y', 0.0)),
-                    yaw=float(item.get('yaw', 0.0)),
+                    name=str(names[i]),
+                    x=float(xs[i]),
+                    y=float(ys[i]),
+                    yaw=float(yaws[i]),
                 )
             )
         return result
